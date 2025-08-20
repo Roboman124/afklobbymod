@@ -22,10 +22,13 @@ Adds the ability to set the location of an afk lobby using coordinates and when 
 
 ## Reqirements
  Minecraft: 1.20.1
+ 
  Fabric Loader: >=0.16.14
+ 
  Fabric API: 0.92.2+1.20.1
+ 
  Java: 17
 
-##Contributing
+## Contributing
 
 Submit issues or pull requests on GitHub.
