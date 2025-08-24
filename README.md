@@ -7,7 +7,7 @@ Adds the ability to set the location of an afk lobby using coordinates and when 
 
 ## Installation
  Install [Fabric Loader]
- Download [Fabric API 0.92.2+1.20.1]
+ Download [Fabric API 0.92.2+1.20.1] for the 1.20.1 version.
   Download `afklobbymod-1.0.0.jar` from the [Releases]
   Place both JARs in your Minecraft `mods` folder.
   Run Minecraft 1.20.1 with the Fabric profile.
