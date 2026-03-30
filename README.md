@@ -15,3 +15,4 @@ Adds the ability to set the location of an afk lobby using coordinates and when 
 ## Contributing
 
 Submit issues or pull requests on GitHub.
+(THIS WAS CODED WITH THE HELP OF AI)
