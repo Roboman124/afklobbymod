@@ -1,0 +1,14 @@
+.gradle/
+build/
+logs/
+*.log
+run/
+*.iml
+.idea/
+.vscode/
+common/
+dist/
+releases/
+build_log.txt
+test_log.txt
+file-system.probe
