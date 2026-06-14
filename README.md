@@ -27,7 +27,9 @@ Each version is a standalone Gradle project with its own `build.gradle` and depe
 
 ## Download
 
-Releases will be available on [Modrinth](https://modrinth.com) soon.
+Releases are published to [Modrinth](https://modrinth.com/mod/afklobbymod).
+
+The Modrinth release marks **Fabric API**, **Cloth Config**, **owo-lib**, and **LuckPerms** as required dependencies so your launcher can auto-download them. LuckPerms is optional at runtime for the mod itself; if it is not installed, the LuckPerms prefix feature is skipped gracefully.
 
 ## Contributing
 
