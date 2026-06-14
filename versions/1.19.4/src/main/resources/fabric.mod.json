@@ -24,10 +24,10 @@
     "java": ">=${java_version}",
     "fabric-api": "*",
     "cloth-config": ">=${cloth_config_version}",
-    "owo": ">=${owo_version}",
-    "luckperms": ">=${luckperms_version}"
+    "owo": ">=${owo_version}"
   },
   "suggests": {
-    "modmenu": "*"
+    "modmenu": "*",
+    "luckperms": ">=${luckperms_version}"
   }
 }

@@ -30,11 +30,14 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
 public class CeremonyScheduler {
+    private static final Logger LOGGER = LoggerFactory.getLogger("afklobbymod");
     private final LobbyManager lobby;
     private final LeaderboardStorage leaderboard;
     private final AfkTracker tracker;
@@ -198,9 +201,13 @@ public class CeremonyScheduler {
         if (winnerPlayer != null) {
             spawnCrown(winnerPlayer);
             if (ModConfig.get().enableLuckPermsPrefix) {
-                LuckPermsIntegration.applyPrefix(currentWinner, ModConfig.get().winnerPrefix, ModConfig.get().winnerPrefixColor);
-                if (previousWinner != null && !previousWinner.equals(currentWinner)) {
-                    LuckPermsIntegration.removePrefix(previousWinner, ModConfig.get().winnerPrefix);
+                try {
+                    LuckPermsIntegration.applyPrefix(currentWinner, ModConfig.get().winnerPrefix, ModConfig.get().winnerPrefixColor);
+                    if (previousWinner != null && !previousWinner.equals(currentWinner)) {
+                        LuckPermsIntegration.removePrefix(previousWinner, ModConfig.get().winnerPrefix);
+                    }
+                } catch (Exception e) {
+                    LOGGER.warn("LuckPerms prefix update failed (is LuckPerms installed/loaded?); continuing ceremony", e);
                 }
             }
         }

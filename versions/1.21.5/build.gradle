@@ -14,6 +14,8 @@ repositories {
 }
 
 dependencies {
+    // LuckPerms remains a Modrinth required dependency for auto-download,
+    // but is optional at runtime for Fabric loader compatibility.
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
@@ -38,7 +40,7 @@ processResources {
         expand 'version': project.version,
                 'minecraft_version': project.minecraft_version,
                 'loader_version': project.loader_version,
-                'java_version': project.findProperty('java_release') ?: project.java_version,
+                'java_version': project.java_version,
                 'fabric_version': project.fabric_version,
                 'cloth_config_version': project.cloth_config_version,
                 'owo_version': project.owo_version,
@@ -52,7 +54,7 @@ java {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.release = (project.findProperty('java_release') ?: project.java_version) as int
+    options.release = project.java_version as int
 }
 
 test { useJUnitPlatform() }
@@ -69,6 +71,8 @@ modrinth {
     changelog = project.findProperty('modrinth.changelog') ?: ''
     uploadFile = remapJar
     dependencies {
+        // LuckPerms remains a Modrinth required dependency for auto-download,
+        // but is optional at runtime for Fabric loader compatibility.
         required.project 'fabric-api'
         required.project 'cloth-config'
         required.project 'owo-lib'

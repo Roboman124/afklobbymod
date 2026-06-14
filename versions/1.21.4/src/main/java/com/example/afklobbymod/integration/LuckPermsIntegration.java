@@ -4,7 +4,6 @@ import com.example.afklobbymod.AfkLobbyMod;
 import com.example.afklobbymod.ModConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import net.luckperms.api.LuckPerms;
-import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.PrefixNode;

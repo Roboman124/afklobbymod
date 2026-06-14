@@ -16,6 +16,8 @@ repositories {
 }
 
 dependencies {
+    // LuckPerms remains a Modrinth required dependency for auto-download,
+    // but is optional at runtime for Fabric loader compatibility.
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
@@ -79,6 +81,8 @@ modrinth {
     syncBodyFrom = rootProject.file('README.md').exists() ? rootProject.file('README.md').text : ''
     uploadFile = remapJar
     dependencies {
+        // LuckPerms remains a Modrinth required dependency for auto-download,
+        // but is optional at runtime for Fabric loader compatibility.
         required.project 'fabric-api'
         required.project 'cloth-config'
         required.project 'owo-lib'
