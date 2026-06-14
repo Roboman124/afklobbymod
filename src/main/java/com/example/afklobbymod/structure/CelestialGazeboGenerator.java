@@ -71,8 +71,7 @@ public final class CelestialGazeboGenerator {
         buildPillars(world, origin);
         buildArches(world, origin);
         buildDome(world, origin);
-        buildEntrance(world, origin);
-        buildFarPortal(world, origin);
+        buildRoofSupports(world, origin);
         buildCentralLight(world, origin);
     }
 
@@ -341,6 +340,39 @@ public final class CelestialGazeboGenerator {
         }
     }
 
+    // New: connect the floating dome to the four pillar capitals
+    private static void buildRoofSupports(ServerWorld world, BlockPos origin) {
+        int pillarRadius = 10;
+        int pillarHeight = 17;
+        int capitalY = 2 + pillarHeight; // top of pillar capitals
+        int domeY = 22;
+        int[][] pillarCentres = {
+                {-pillarRadius, 0}, {pillarRadius, 0}, {0, -pillarRadius}, {0, pillarRadius}
+        };
+
+        for (int[] centre : pillarCentres) {
+            int x = centre[0];
+            int z = centre[1];
+            // Build a stone-brick brace from the capital up to the dome underside
+            for (int y = capitalY + 1; y <= domeY - 3; y++) {
+                BlockPos brace = origin.add(x, y, z);
+                set(world, brace, STONE_BRICKS);
+            }
+            // Flared brace top where it meets the dome
+            set(world, origin.add(x, domeY - 2, z), STONE_BRICKS);
+            set(world, origin.add(x, domeY - 1, z), COBBLESTONE);
+        }
+
+        // Add horizontal tie beams between the braces at capital level
+        int beamY = capitalY + 1;
+        for (int i = -pillarRadius; i <= pillarRadius; i++) {
+            set(world, origin.add(i, beamY, -pillarRadius), DARK_OAK_PLANKS);
+            set(world, origin.add(i, beamY, pillarRadius), DARK_OAK_PLANKS);
+            set(world, origin.add(-pillarRadius, beamY, i), DARK_OAK_PLANKS);
+            set(world, origin.add(pillarRadius, beamY, i), DARK_OAK_PLANKS);
+        }
+    }
+
     private static boolean isRibLine(int x, int z) {
         return Math.abs(x) <= 1 || Math.abs(z) <= 1 || Math.abs(Math.abs(x) - Math.abs(z)) <= 1;
     }
@@ -353,67 +385,16 @@ public final class CelestialGazeboGenerator {
     }
 
     // =========================================================
-    // 5. Front entrance archway
-    // =========================================================
-
-    private static void buildEntrance(ServerWorld world, BlockPos origin) {
-        // Front side of island is +Z
-        int zEdge = 11;
-        BlockPos base = origin.add(0, 1, zEdge);
-
-        // Two small pillars
-        for (int dx : new int[]{-2, 2}) {
-            for (int y = 0; y < 4; y++) {
-                set(world, base.add(dx, y, 0), STONE_BRICKS);
-            }
-            set(world, base.add(dx, 4, 0), STONE_BRICK_STAIRS.with(StairsBlock.FACING, dx > 0 ? Direction.EAST : Direction.WEST));
-        }
-
-        // Slab arch across
-        for (int dx = -1; dx <= 1; dx++) {
-            set(world, base.add(dx, 4, 0), STONE_BRICK_SLAB.with(Properties.SLAB_TYPE, SlabType.BOTTOM));
-        }
-
-        // Stair entrance steps
-        for (int dx = -1; dx <= 1; dx++) {
-            set(world, base.add(dx, 0, 1), STONE_BRICK_STAIRS.with(StairsBlock.FACING, Direction.SOUTH));
-            set(world, base.add(dx, -1, 2), STONE_BRICK_STAIRS.with(StairsBlock.FACING, Direction.SOUTH));
-        }
-    }
-
-    // =========================================================
-    // 6. Detached far decorative portal arch
-    // =========================================================
-
-    private static void buildFarPortal(ServerWorld world, BlockPos origin) {
-        // Far side of island is -Z
-        int zEdge = -11;
-        BlockPos centerBase = origin.add(0, 0, zEdge - 2);
-
-        for (int y = 0; y < 6; y++) {
-            set(world, centerBase.add(-2, y, 0), CHISELED_STONE_BRICKS);
-            set(world, centerBase.add(2, y, 0), CHISELED_STONE_BRICKS);
-        }
-        for (int dx = -2; dx <= 2; dx++) {
-            set(world, centerBase.add(dx, 5, 0), STONE_BRICKS);
-        }
-        // Decorative keystone / top stair
-        set(world, centerBase.add(0, 6, 0), STONE_BRICK_STAIRS.with(StairsBlock.FACING, Direction.SOUTH));
-
-        // A few hanging spruce trim pieces
-        set(world, centerBase.add(-1, 4, 0), SPRUCE_TRAPDOOR.with(TrapdoorBlock.FACING, Direction.NORTH)
-                .with(TrapdoorBlock.HALF, BlockHalf.TOP).with(Properties.OPEN, true));
-        set(world, centerBase.add(1, 4, 0), SPRUCE_TRAPDOOR.with(TrapdoorBlock.FACING, Direction.NORTH)
-                .with(TrapdoorBlock.HALF, BlockHalf.TOP).with(Properties.OPEN, true));
-    }
-
-    // =========================================================
-    // 7. Central interior light
+    // 5. Central interior light hanging from the dome
     // =========================================================
 
     private static void buildCentralLight(ServerWorld world, BlockPos origin) {
-        BlockPos light = origin.add(0, 14, 0);
-        set(world, light, RANDOM.nextBoolean() ? GLOWSTONE : REDSTONE_LAMP);
+        // Anchor the lantern to the underside of the dome so it does not float.
+        BlockPos anchor = origin.add(0, 21, 0);
+        set(world, anchor, CHISELED_STONE_BRICKS);
+        set(world, anchor.down(), DARK_OAK_FENCE);
+        set(world, anchor.down(2), DARK_OAK_FENCE);
+        set(world, anchor.down(3), RANDOM.nextBoolean() ? GLOWSTONE : REDSTONE_LAMP);
     }
 
     // =========================================================

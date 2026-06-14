@@ -78,7 +78,6 @@ public final class TownSquareTheaterGenerator {
         buildGround(world, origin);
         buildAudienceSeating(world, origin);
         buildStage(world, origin);
-        buildPillarsAndRoof(world, origin);
         buildBackstageWall(world, origin);
         buildStageDetails(world, origin);
         buildFloorInlayAndCampfires(world, origin);
@@ -108,25 +107,29 @@ public final class TownSquareTheaterGenerator {
     }
 
     // =========================================================
-    // 2. Audience seating: two concentric semi-circular rows
+    // 2. Audience seating: raised platforms with stair chairs
     // =========================================================
 
     private static void buildAudienceSeating(ServerWorld world, BlockPos origin) {
         // Audience sits in front of the stage; stage is at +Z.
-        // Chairs face SOUTH toward the stage.
+        // Chairs face SOUTH toward the stage and sit on raised platforms.
         Direction faceStage = Direction.SOUTH;
 
         // Inner row of 6 chairs, about z = -1 (2 blocks from stage apron)
         int[] innerX = {-5, -3, -1, 1, 3, 5};
         for (int x : innerX) {
-            BlockPos seat = origin.add(x, 0, -1);
+            BlockPos seat = origin.add(x, 1, -1);
+            // Raise the chair one block above ground and support it
+            set(world, seat.down(), SPRUCE_PLANKS);
             set(world, seat, SPRUCE_STAIRS.with(StairsBlock.FACING, faceStage));
         }
 
-        // Outer row of 5 chairs offset, about z = -3
+        // Outer row of 5 chairs offset, about z = -3; raised two steps for sightlines
         int[] outerX = {-5, -2, 0, 2, 5};
         for (int x : outerX) {
-            BlockPos seat = origin.add(x, 0, -3);
+            BlockPos seat = origin.add(x, 2, -3);
+            set(world, seat.down(), SPRUCE_PLANKS);
+            set(world, seat.down(2), SPRUCE_PLANKS);
             set(world, seat, SPRUCE_STAIRS.with(StairsBlock.FACING, faceStage));
         }
     }
