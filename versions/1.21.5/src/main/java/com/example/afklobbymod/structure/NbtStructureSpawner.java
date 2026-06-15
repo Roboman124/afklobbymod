@@ -1,5 +1,6 @@
 package com.example.afklobbymod.structure;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
@@ -17,6 +18,8 @@ import net.minecraft.util.math.random.Random;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
 /**
@@ -85,14 +88,19 @@ public final class NbtStructureSpawner {
             return opt.get();
         }
 
-        // Fallback: read the bundled NBT file directly from our own resources
-        // and ask the manager to parse it with its configured registry lookup.
-        String resourcePath = "/data/" + id.replace(':', '/') + ".nbt";
-        try (InputStream stream = NbtStructureSpawner.class.getResourceAsStream(resourcePath)) {
-            if (stream == null) {
-                com.example.afklobbymod.AfkLobbyMod.LOGGER.warn("Missing bundled structure resource: {}", resourcePath);
-                return null;
-            }
+        // Fallback: read the bundled NBT file directly via the Fabric mod container
+        // (more reliable than Class.getResourceAsStream across loader versions).
+        String resourcePath = "data/" + id.replace(':', '/') + ".nbt";
+        Optional<Path> pathOpt = FabricLoader.getInstance()
+                .getModContainer(com.example.afklobbymod.AfkLobbyMod.MOD_ID)
+                .flatMap(c -> c.findPath(resourcePath));
+
+        if (pathOpt.isEmpty()) {
+            com.example.afklobbymod.AfkLobbyMod.LOGGER.warn("Missing bundled structure resource: {}", resourcePath);
+            return null;
+        }
+
+        try (InputStream stream = Files.newInputStream(pathOpt.get())) {
             NbtCompound nbt = readCompressed(stream);
             return manager.createTemplate(nbt);
         } catch (IOException e) {

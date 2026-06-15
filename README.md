@@ -2,6 +2,8 @@
 
 Adds the ability to set the location of an AFK lobby using coordinates. When a player does not move with their keyboard for the configured amount of time, they are taken to the lobby. When they move again, they are taken back to where they were.
 
+Veteran users can still set their own custom lobby just like before with `/afk setlobby`. New users — or anyone who wants a ready-made build — can use the included bundled structures: the **"WAITING LOBBY"** by Twistermns and the **Concert Stage** by HD Studios. You can find their original builds on Planet Minecraft. If either creator is reading this and would prefer their build not be included in the mod, please open an issue on GitHub and we will remove it.
+
 ## Features
 
 - `/afk setlobby x y z` - Sets the AFK lobby location.
