@@ -90,7 +90,9 @@ public final class NbtStructureSpawner {
         }
 
         // Fallback 1: read the bundled NBT file via the Fabric mod container.
-        String resourcePath = "data/" + id.replace(':', '/') + ".nbt";
+        // The files live under data/<namespace>/structures/<name>.nbt.
+        String structureName = id.substring(id.indexOf(':') + 1);
+        String resourcePath = "data/afklobbymod/structures/" + structureName + ".nbt";
         Optional<Path> pathOpt = findBundledPath(resourcePath);
         if (pathOpt.isPresent()) {
             try (InputStream stream = Files.newInputStream(pathOpt.get())) {
