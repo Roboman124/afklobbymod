@@ -16,12 +16,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.Random;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Spawns structures authored in external NBT files.
@@ -148,28 +150,30 @@ public final class NbtStructureSpawner {
     }
 
     /**
-     * Reads a compressed NBT compound from an input stream in a way that is
-     * compatible with both the old {@code NbtTagSizeTracker} and the newer
-     * {@code NbtSizeTracker} class names.
+     * Reads a Minecraft compressed NBT structure file. The file is gzip-compressed
+     * and contains a single root NbtCompound.
+     *
+     * We locate the appropriate {@code NbtIo} method by signature rather than by
+     * Yarn name so this works under Fabric's runtime mappings in every version
+     * (e.g. 1.19.4 calls it {@code read(DataInput)}, newer versions call it
+     * {@code readCompound(DataInput)}).
      */
     private static NbtCompound readCompressed(InputStream stream) throws IOException {
-        String[] trackerClassNames = {
-                "net.minecraft.nbt.NbtSizeTracker",
-                "net.minecraft.nbt.NbtTagSizeTracker"
-        };
-
-        for (String className : trackerClassNames) {
-            try {
-                Class<?> trackerClass = Class.forName(className);
-                Method ofUnlimited = trackerClass.getMethod("ofUnlimitedBytes");
-                Object tracker = ofUnlimited.invoke(null);
-                Method readMethod = NbtIo.class.getMethod("readCompressed", InputStream.class, trackerClass);
-                return (NbtCompound) readMethod.invoke(null, stream, tracker);
-            } catch (Exception ignored) {
-                // Try the other class name.
+        // Structure NBT files are gzip-compressed.
+        try (DataInputStream data = new DataInputStream(new GZIPInputStream(stream))) {
+            for (Method method : NbtIo.class.getDeclaredMethods()) {
+                if (method.getReturnType() != NbtCompound.class) continue;
+                Class<?>[] params = method.getParameterTypes();
+                if (params.length != 1 || params[0] != java.io.DataInput.class) continue;
+                if (!java.lang.reflect.Modifier.isStatic(method.getModifiers())) continue;
+                try {
+                    method.setAccessible(true);
+                    return (NbtCompound) method.invoke(null, data);
+                } catch (ReflectiveOperationException e) {
+                    throw new IOException("Failed to invoke NbtIo reader", e);
+                }
             }
         }
-
-        throw new IOException("Unable to read compressed NBT with any known size tracker class");
+        throw new IOException("Unable to find a suitable NbtIo.readCompound(DataInput) method");
     }
 }
