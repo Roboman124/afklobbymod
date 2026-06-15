@@ -1,7 +1,6 @@
 package com.example.afklobbymod;
 
-import com.example.afklobbymod.structure.CelestialGazeboGenerator;
-import com.example.afklobbymod.structure.TownSquareTheaterGenerator;
+import com.example.afklobbymod.structure.NbtStructureSpawner;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
@@ -93,11 +92,11 @@ public class AfkCommands {
                         ServerWorld world = (ServerWorld) p.getWorld();
                         switch (name) {
                             case "celestialgazebo" -> {
-                                CelestialGazeboGenerator.build(world, origin);
-                                reply(ctx.getSource(), "Built Celestial Gazebo at " + origin.getX() + ", " + origin.getY() + ", " + origin.getZ() + ".");
+                                NbtStructureSpawner.spawnLobby(world, origin);
+                                reply(ctx.getSource(), "Built Celestial Gazebo in the sky at " + origin.getX() + ", " + (origin.getY() + 80) + ", " + origin.getZ() + ".");
                             }
                             case "townsquaretheater" -> {
-                                TownSquareTheaterGenerator.build(world, origin);
+                                NbtStructureSpawner.spawnStage(world, origin);
                                 reply(ctx.getSource(), "Built Town Square Theater at " + origin.getX() + ", " + origin.getY() + ", " + origin.getZ() + ".");
                             }
                             default -> {

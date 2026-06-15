@@ -1,5 +1,6 @@
 package com.example.afklobbymod;
 
+import com.example.afklobbymod.structure.NbtStructureSpawner;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
@@ -10,7 +11,9 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.concurrent.TimeUnit;
 
@@ -74,6 +77,35 @@ public class AfkCommands {
                     reply(ctx.getSource(), "Ceremony started.");
                     return 1;
                 }))
+            .then(CommandManager.literal("build")
+                .then(CommandManager.argument("structure", StringArgumentType.string())
+                    .suggests((ctx, builder) -> {
+                        builder.suggest("celestialgazebo");
+                        builder.suggest("townsquaretheater");
+                        return builder.buildFuture();
+                    })
+                    .executes(ctx -> {
+                        ServerPlayerEntity p = ctx.getSource().getPlayer();
+                        if (p == null) { reply(ctx.getSource(), "Player-only command."); return 0; }
+                        String name = StringArgumentType.getString(ctx, "structure").toLowerCase();
+                        BlockPos origin = p.getBlockPos();
+                        ServerWorld world = (ServerWorld) p.getWorld();
+                        switch (name) {
+                            case "celestialgazebo" -> {
+                                NbtStructureSpawner.spawnLobby(world, origin);
+                                reply(ctx.getSource(), "Built Celestial Gazebo in the sky at " + origin.getX() + ", " + (origin.getY() + 80) + ", " + origin.getZ() + ".");
+                            }
+                            case "townsquaretheater" -> {
+                                NbtStructureSpawner.spawnStage(world, origin);
+                                reply(ctx.getSource(), "Built Town Square Theater at " + origin.getX() + ", " + origin.getY() + ", " + origin.getZ() + ".");
+                            }
+                            default -> {
+                                reply(ctx.getSource(), "Unknown structure. Use celestialgazebo or townsquaretheater.");
+                                return 0;
+                            }
+                        }
+                        return 1;
+                    })))
             .then(CommandManager.literal("hud")
                 .then(CommandManager.argument("enabled", BoolArgumentType.bool())
                     .executes(ctx -> {
