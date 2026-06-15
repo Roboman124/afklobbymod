@@ -6,13 +6,13 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven { url 'https://maven.fabricmc.net/' }
-    maven { url 'https://maven.minecraftforge.net/' }
-    maven { url 'https://maven.shedaniel.me/' }
-    maven { url 'https://repo.luckperms.net/' }
-    maven { url 'https://jitpack.io' }
-    maven { url 'https://maven.terraformersmc.com/' }
-    maven { url 'https://maven.wispforest.io/' }
+    maven { url = 'https://maven.fabricmc.net/' }
+    maven { url = 'https://maven.minecraftforge.net/' }
+    maven { url = 'https://maven.shedaniel.me/' }
+    maven { url = 'https://repo.luckperms.net/' }
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://maven.terraformersmc.com/' }
+    maven { url = 'https://maven.wispforest.io/' }
 }
 
 dependencies {
@@ -33,22 +33,23 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-base { archivesName = project.archives_base_name }
+base { archivesName.set(project.archives_base_name) }
 version = "${project.mod_version}+${project.minecraft_version}"
 group = project.maven_group
 
 processResources {
-    inputs.property 'version', project.version
-        filesMatching('fabric.mod.json') {
-            expand 'version': project.version,
-                    'minecraft_version': project.minecraft_version,
-                    'loader_version': project.loader_version,
-                    'java_version': project.findProperty('java_release') ?: project.java_version,
-                    'fabric_version': project.fabric_version,
-                    'cloth_config_version': project.cloth_config_version,
-                    'owo_version': project.owo_version,
-                    'luckperms_version': project.luckperms_version
-        }
+    def props = [
+            'version': project.version,
+            'minecraft_version': project.minecraft_version,
+            'loader_version': project.loader_version,
+            'java_version': project.findProperty('java_release') ?: project.java_version,
+            'fabric_version': project.fabric_version,
+            'cloth_config_version': project.cloth_config_version,
+            'owo_version': project.owo_version,
+            'luckperms_version': project.luckperms_version
+    ]
+    inputs.properties(props)
+    filesMatching('fabric.mod.json') { expand props }
 }
 
 java {
@@ -64,8 +65,9 @@ test {
     useJUnitPlatform()
 }
 
+def archiveBaseName = project.base.archivesName.get()
 jar {
-    from('LICENSE') { rename { "${it}_${project.base.archivesName.get()}" } }
+    from('LICENSE') { rename { "${it}_${archiveBaseName}" } }
 }
 
 modrinth {
