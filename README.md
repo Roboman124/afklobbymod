@@ -21,6 +21,7 @@ This repository contains the **1.20.1** version at the root. Additional standalo
 
 - `1.19.4`
 - `1.20.4`
+- `1.21`
 - `1.21.1`
 - `1.21.4`
 - `1.21.5`

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "afklobbymod",
+  "version": "${version}",
+  "name": "AFK Lobby Mod",
+  "description": "A server-side Fabric mod for AFK detection, lobby teleportation, persistent time tracking, live leaderboard, and daily ceremonies.",
+  "authors": ["Your Name"],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/afklobbymod",
+    "sources": "https://github.com/yourname/afklobbymod",
+    "issues": "https://github.com/yourname/afklobbymod/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/afklobbymod/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.example.afklobbymod.AfkLobbyMod"],
+    "client": ["com.example.afklobbymod.client.AfkLobbyClient"],
+    "modmenu": ["com.example.afklobbymod.config.ModMenuIntegration"]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "~${minecraft_version}",
+    "java": ">=${java_version}",
+    "fabric-api": "*",
+    "cloth-config": ">=${cloth_config_version}",
+    "owo": "*"
+  },
+  "suggests": {
+    "modmenu": "*",
+    "luckperms": ">=${luckperms_version}"
+  }
+}
